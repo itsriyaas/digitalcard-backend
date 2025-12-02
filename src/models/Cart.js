@@ -14,7 +14,12 @@ const cartItemSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: true
+    required: false,
+    default: null
+  },
+  isEnquiry: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -54,7 +59,13 @@ const cartSchema = new mongoose.Schema({
 
 // Calculate totals before saving
 cartSchema.pre('save', function(next) {
-  this.subtotal = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  // Only calculate totals for items with price (exclude enquiry items)
+  this.subtotal = this.items.reduce((sum, item) => {
+    if (!item.isEnquiry && item.price !== null) {
+      return sum + (item.price * item.quantity);
+    }
+    return sum;
+  }, 0);
   this.total = this.subtotal - this.discount;
   next();
 });

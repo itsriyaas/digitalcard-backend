@@ -183,7 +183,7 @@ export const getPublicCatalogue = async (req, res) => {
     const catalogue = await Catalogue.findOne({
       slug: req.params.slug,
       isPublished: true
-    });
+    }).populate('user', 'phone name email');
 
     if (!catalogue) {
       return res.status(404).json({

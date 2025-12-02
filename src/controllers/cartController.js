@@ -54,8 +54,11 @@ export const addToCart = async (req, res) => {
       });
     }
 
-    // Check stock
-    if (!product.stockAvailable || product.stock < quantity) {
+    // Check if product is enquiry-only
+    const isEnquiryProduct = !product.price && product.price !== 0;
+
+    // Check stock (only if not enquiry product)
+    if (!isEnquiryProduct && (!product.stockAvailable || product.stock < quantity)) {
       return res.status(400).json({
         success: false,
         message: 'Product out of stock'
@@ -89,7 +92,8 @@ export const addToCart = async (req, res) => {
       cart.items.push({
         product: productId,
         quantity,
-        price: product.discountPrice || product.price
+        price: isEnquiryProduct ? null : (product.discountPrice || product.price),
+        isEnquiry: isEnquiryProduct
       });
     }
 
