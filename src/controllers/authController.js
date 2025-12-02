@@ -29,6 +29,8 @@ export const registerUser = async (req, res, next) => {
         email: user.email,
         role: user.role,
         plan: user.plan,
+        subscription: user.subscription,
+        isActive: user.isActive,
         token: generateToken(user._id),
       },
     });
@@ -53,6 +55,37 @@ export const loginUser = async (req, res, next) => {
     if (!isMatch)
       return res.status(400).json({ message: "Invalid email or password" });
 
+    // Check if account is active
+    if (!user.isActive) {
+      return res.status(403).json({
+        message: "Your account has been deactivated. Please contact support."
+      });
+    }
+
+    // Check subscription status for customers
+    if (user.role === 'customer') {
+      const { subscription } = user;
+
+      // Check if subscription is not active
+      if (subscription.status !== 'active') {
+        return res.status(403).json({
+          message: "Your subscription is not active. Please contact admin to activate your subscription.",
+          subscriptionStatus: subscription.status
+        });
+      }
+
+      // Check if subscription has expired
+      if (subscription.endDate && new Date(subscription.endDate) < new Date()) {
+        user.subscription.status = 'expired';
+        await user.save();
+
+        return res.status(403).json({
+          message: "Your subscription has expired. Please contact admin to renew your subscription.",
+          subscriptionStatus: 'expired'
+        });
+      }
+    }
+
     res.json({
       user: {
         _id: user._id,
@@ -60,6 +93,8 @@ export const loginUser = async (req, res, next) => {
         email: user.email,
         role: user.role,
         plan: user.plan,
+        subscription: user.subscription,
+        isActive: user.isActive,
         token: generateToken(user._id),
       },
     });
@@ -80,6 +115,10 @@ export const getMe = async (req, res, next) => {
       email: user.email,
       role: user.role,
       plan: user.plan,
+      subscription: user.subscription,
+      isActive: user.isActive,
+      phone: user.phone,
+      company: user.company,
     });
   } catch (err) {
     next(err);

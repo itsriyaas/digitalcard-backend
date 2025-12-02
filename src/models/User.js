@@ -20,8 +20,47 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
     },
 
-    role: { type: String, default: "user" },
+    role: {
+      type: String,
+      enum: ['admin', 'customer', 'user'],
+      default: "user"
+    },
     plan: { type: String, default: "free" },
+
+    /* -----------------------------------
+     * SUBSCRIPTION MANAGEMENT FOR CUSTOMERS
+     * -----------------------------------
+     * Only applicable for users with role: 'customer'
+     */
+    subscription: {
+      type: {
+        plan: {
+          type: String,
+          enum: ['monthly', 'yearly', 'none'],
+          default: 'none'
+        },
+        status: {
+          type: String,
+          enum: ['active', 'expired', 'cancelled', 'pending'],
+          default: 'pending'
+        },
+        startDate: { type: Date, default: null },
+        endDate: { type: Date, default: null },
+        autoRenew: { type: Boolean, default: false },
+        // Payment details can be extended later
+        paymentId: { type: String, default: null },
+        amount: { type: Number, default: 0 }
+      },
+      default: () => ({
+        plan: 'none',
+        status: 'pending',
+        startDate: null,
+        endDate: null,
+        autoRenew: false,
+        paymentId: null,
+        amount: 0
+      })
+    },
 
     /* -----------------------------------
      * OTP SYSTEM FOR MULTIPLE PURPOSES
@@ -36,6 +75,23 @@ const userSchema = new mongoose.Schema(
 
     // Email verification status
     isEmailVerified: { type: Boolean, default: false },
+
+    // Customer specific fields
+    phone: { type: String, default: null },
+    company: { type: String, default: null },
+    address: {
+      type: {
+        street: { type: String, default: null },
+        city: { type: String, default: null },
+        state: { type: String, default: null },
+        country: { type: String, default: null },
+        zipCode: { type: String, default: null }
+      },
+      default: {}
+    },
+
+    // Account status
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
