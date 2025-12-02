@@ -90,6 +90,12 @@ const userSchema = new mongoose.Schema(
       default: {}
     },
 
+    // Catalogue limit for customers
+    catalogueLimit: {
+      type: Number,
+      default: -1 // -1 means unlimited, 0 means no catalogues allowed, positive number is the limit
+    },
+
     // Account status
     isActive: { type: Boolean, default: true },
   },

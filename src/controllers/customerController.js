@@ -55,8 +55,11 @@ export const createCustomer = async (req, res, next) => {
       phone,
       company,
       address,
-      subscription
+      subscription,
+      catalogueLimit
     } = req.body;
+
+    console.log('Creating customer with catalogueLimit:', catalogueLimit, typeof catalogueLimit);
 
     // Check if email already exists
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
@@ -108,8 +111,11 @@ export const createCustomer = async (req, res, next) => {
       company: company || null,
       address: addressData,
       subscription: subscriptionData,
+      catalogueLimit: catalogueLimit !== undefined ? catalogueLimit : -1,
       isActive: true
     });
+
+    console.log('Customer created with catalogueLimit:', customer.catalogueLimit);
 
     res.status(201).json({
       success: true,
@@ -123,6 +129,7 @@ export const createCustomer = async (req, res, next) => {
         company: customer.company,
         address: customer.address,
         subscription: customer.subscription,
+        catalogueLimit: customer.catalogueLimit,
         isActive: customer.isActive
       }
     });
@@ -142,8 +149,11 @@ export const updateCustomer = async (req, res, next) => {
       company,
       address,
       isActive,
-      subscription
+      subscription,
+      catalogueLimit
     } = req.body;
+
+    console.log('Updating customer with catalogueLimit:', catalogueLimit, typeof catalogueLimit);
 
     const customer = await User.findOne({
       _id: req.params.id,
@@ -168,6 +178,10 @@ export const updateCustomer = async (req, res, next) => {
       };
     }
     if (isActive !== undefined) customer.isActive = isActive;
+    if (catalogueLimit !== undefined) {
+      customer.catalogueLimit = catalogueLimit;
+      console.log('Set catalogueLimit to:', customer.catalogueLimit);
+    }
 
     // Update subscription if provided
     if (subscription) {
@@ -184,6 +198,8 @@ export const updateCustomer = async (req, res, next) => {
 
     await customer.save();
 
+    console.log('Customer saved with catalogueLimit:', customer.catalogueLimit);
+
     res.json({
       success: true,
       message: "Customer updated successfully",
@@ -196,6 +212,7 @@ export const updateCustomer = async (req, res, next) => {
         company: customer.company,
         address: customer.address,
         subscription: customer.subscription,
+        catalogueLimit: customer.catalogueLimit,
         isActive: customer.isActive
       }
     });

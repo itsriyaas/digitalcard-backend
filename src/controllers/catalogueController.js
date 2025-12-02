@@ -1,12 +1,31 @@
 import Catalogue from '../models/Catalogue.js';
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
+import User from '../models/User.js';
 
 // @desc    Create new catalogue
 // @route   POST /api/catalogue
 // @access  Private
 export const createCatalogue = async (req, res) => {
   try {
+    // Check catalogue limit for customers
+    if (req.user.role === 'customer') {
+      const user = await User.findById(req.user._id);
+
+      // If catalogueLimit is 0 or greater, check if limit is reached
+      if (user.catalogueLimit >= 0) {
+        const catalogueCount = await Catalogue.countDocuments({ user: req.user._id });
+
+        if (catalogueCount >= user.catalogueLimit) {
+          return res.status(403).json({
+            success: false,
+            message: `Catalogue limit reached. You can only create ${user.catalogueLimit} catalogue${user.catalogueLimit !== 1 ? 's' : ''}.`
+          });
+        }
+      }
+      // If catalogueLimit is -1, unlimited catalogues are allowed
+    }
+
     const catalogue = await Catalogue.create({
       ...req.body,
       user: req.user._id
