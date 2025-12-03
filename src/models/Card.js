@@ -146,6 +146,22 @@ const analyticsSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const enquiryFormSchema = new mongoose.Schema(
+  {
+    enabled: { type: Boolean, default: false },
+    fields: [{ type: String }]
+  },
+  { _id: false }
+);
+
+const qrCodeSchema = new mongoose.Schema(
+  {
+    enabled: { type: Boolean, default: false },
+    style: { type: String, default: 'default' }
+  },
+  { _id: false }
+);
+
 const cardSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -164,6 +180,8 @@ const cardSchema = new mongoose.Schema(
     testimonials: [testimonialSchema],
     offers: [offerSchema],
     buttons: [buttonSchema],
+    enquiryForm: { type: enquiryFormSchema, default: () => ({}) },
+    qrCode: { type: qrCodeSchema, default: () => ({}) },
 
     // Legacy fields (keeping for backward compatibility)
     contact: contactSchema,
@@ -185,7 +203,8 @@ cardSchema.pre("save", async function (next) {
   let count = 1;
 
   const Card = mongoose.model("Card", cardSchema);
-  while (await Card.findOne({ slug })) {
+  // Exclude current document when checking for existing slug
+  while (await Card.findOne({ slug, _id: { $ne: this._id } })) {
     slug = `${baseSlug}-${count++}`;
   }
 

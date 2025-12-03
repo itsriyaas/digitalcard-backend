@@ -23,7 +23,9 @@ export const createCard = async (req, res, next) => {
       products,
       testimonials,
       offers,
-      buttons
+      buttons,
+      enquiryForm,
+      qrCode
     } = req.body;
 
     if (!title) return res.status(400).json({ message: "Title is required" });
@@ -45,11 +47,14 @@ export const createCard = async (req, res, next) => {
       products,
       testimonials,
       offers,
-      buttons
+      buttons,
+      enquiryForm,
+      qrCode
     });
 
     res.status(201).json({ card });
   } catch (err) {
+    console.error('Card creation error:', err);
     next(err);
   }
 };
@@ -91,6 +96,7 @@ export const updateCard = async (req, res, next) => {
     await card.save();
     res.json({ card });
   } catch (err) {
+    console.error('Card update error:', err);
     next(err);
   }
 };

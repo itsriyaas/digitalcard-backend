@@ -17,6 +17,7 @@ import couponRoutes from "./src/routes/couponRoutes.js";
 import orderRoutes from "./src/routes/orderRoutes.js";
 import paymentRoutes from "./src/routes/paymentRoutes.js";
 import customerRoutes from "./src/routes/customerRoutes.js";
+import digitalCardRoutes from "./src/routes/digitalCardRoutes.js";
 import { notFound, errorHandler } from "./src/middleware/errorMiddleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -57,6 +58,9 @@ app.use("/api/payment", paymentRoutes);
 
 // Customer Management Routes
 app.use("/api/customers", customerRoutes);
+
+// Digital Card Routes
+app.use("/api/digital-cards", digitalCardRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
