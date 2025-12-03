@@ -7,8 +7,24 @@ import Card from "../models/Card.js";
  */
 export const createCard = async (req, res, next) => {
   try {
-    const { title, businessType, about, logo, banner, contact, socialLinks, items, template } =
-      req.body;
+    const {
+      title,
+      businessType,
+      about,
+      logo,
+      banner,
+      contact,
+      socialLinks,
+      items,
+      template,
+      customization,
+      coverMedia,
+      gallery,
+      products,
+      testimonials,
+      offers,
+      buttons
+    } = req.body;
 
     if (!title) return res.status(400).json({ message: "Title is required" });
 
@@ -22,7 +38,14 @@ export const createCard = async (req, res, next) => {
       contact,
       socialLinks,
       items,
-      template
+      template,
+      customization,
+      coverMedia,
+      gallery,
+      products,
+      testimonials,
+      offers,
+      buttons
     });
 
     res.status(201).json({ card });
