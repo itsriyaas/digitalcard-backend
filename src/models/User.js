@@ -96,6 +96,12 @@ const userSchema = new mongoose.Schema(
       default: -1 // -1 means unlimited, 0 means no catalogues allowed, positive number is the limit
     },
 
+    // Card limit for customers
+    cardLimit: {
+      type: Number,
+      default: -1 // -1 means unlimited, 0 means no cards allowed, positive number is the limit
+    },
+
     // Account status
     isActive: { type: Boolean, default: true },
   },

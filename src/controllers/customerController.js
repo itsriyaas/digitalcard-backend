@@ -56,10 +56,12 @@ export const createCustomer = async (req, res, next) => {
       company,
       address,
       subscription,
-      catalogueLimit
+      catalogueLimit,
+      cardLimit
     } = req.body;
 
     console.log('Creating customer with catalogueLimit:', catalogueLimit, typeof catalogueLimit);
+    console.log('Creating customer with cardLimit:', cardLimit, typeof cardLimit);
 
     // Check if email already exists
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
@@ -112,10 +114,12 @@ export const createCustomer = async (req, res, next) => {
       address: addressData,
       subscription: subscriptionData,
       catalogueLimit: catalogueLimit !== undefined ? catalogueLimit : -1,
+      cardLimit: cardLimit !== undefined ? cardLimit : -1,
       isActive: true
     });
 
     console.log('Customer created with catalogueLimit:', customer.catalogueLimit);
+    console.log('Customer created with cardLimit:', customer.cardLimit);
 
     res.status(201).json({
       success: true,
@@ -130,6 +134,7 @@ export const createCustomer = async (req, res, next) => {
         address: customer.address,
         subscription: customer.subscription,
         catalogueLimit: customer.catalogueLimit,
+        cardLimit: customer.cardLimit,
         isActive: customer.isActive
       }
     });
@@ -150,10 +155,12 @@ export const updateCustomer = async (req, res, next) => {
       address,
       isActive,
       subscription,
-      catalogueLimit
+      catalogueLimit,
+      cardLimit
     } = req.body;
 
     console.log('Updating customer with catalogueLimit:', catalogueLimit, typeof catalogueLimit);
+    console.log('Updating customer with cardLimit:', cardLimit, typeof cardLimit);
 
     const customer = await User.findOne({
       _id: req.params.id,
@@ -182,6 +189,10 @@ export const updateCustomer = async (req, res, next) => {
       customer.catalogueLimit = catalogueLimit;
       console.log('Set catalogueLimit to:', customer.catalogueLimit);
     }
+    if (cardLimit !== undefined) {
+      customer.cardLimit = cardLimit;
+      console.log('Set cardLimit to:', customer.cardLimit);
+    }
 
     // Update subscription if provided
     if (subscription) {
@@ -199,6 +210,7 @@ export const updateCustomer = async (req, res, next) => {
     await customer.save();
 
     console.log('Customer saved with catalogueLimit:', customer.catalogueLimit);
+    console.log('Customer saved with cardLimit:', customer.cardLimit);
 
     res.json({
       success: true,
@@ -213,6 +225,7 @@ export const updateCustomer = async (req, res, next) => {
         address: customer.address,
         subscription: customer.subscription,
         catalogueLimit: customer.catalogueLimit,
+        cardLimit: customer.cardLimit,
         isActive: customer.isActive
       }
     });

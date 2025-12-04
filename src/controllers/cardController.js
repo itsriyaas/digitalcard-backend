@@ -1,12 +1,31 @@
 // src/controllers/cardController.js
 import mongoose from "mongoose";
 import Card from "../models/Card.js";
+import User from "../models/User.js";
 
 /**
  * POST /api/cards
  */
 export const createCard = async (req, res, next) => {
   try {
+    // Check card limit for customers
+    if (req.user.role === 'customer') {
+      const user = await User.findById(req.user._id);
+
+      // If cardLimit is 0 or greater, check if limit is reached
+      if (user.cardLimit >= 0) {
+        const cardCount = await Card.countDocuments({ user: req.user._id });
+
+        if (cardCount >= user.cardLimit) {
+          return res.status(403).json({
+            success: false,
+            message: `Card limit reached. You can only create ${user.cardLimit} card${user.cardLimit !== 1 ? 's' : ''}.`
+          });
+        }
+      }
+      // If cardLimit is -1, unlimited cards are allowed
+    }
+
     const {
       title,
       businessType,
