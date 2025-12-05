@@ -46,7 +46,7 @@ const catalogueSchema = new mongoose.Schema({
     },
     fontStyle: {
       type: String,
-      enum: ['sans', 'serif', 'mono'],
+      enum: ['sans', 'serif', 'mono', 'inter', 'roboto', 'poppins', 'opensans', 'lato', 'montserrat', 'playfair', 'merriweather', 'raleway', 'ubuntu'],
       default: 'sans'
     },
     buttonStyle: {
